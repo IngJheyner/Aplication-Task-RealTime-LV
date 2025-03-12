@@ -1,0 +1,34 @@
+name: task-app
+recipe: laravel
+config:
+  webroot: public
+  php: '8.3'
+  via: nginx
+services:
+  database:
+    type: mariadb
+    creds:
+      database: task
+  appserver:
+    xdebug: true
+    config:
+      php: .lando/php.ini
+    overrides:
+      environment:
+        PHP_IDE_CONFIG: "serverName=appserver"
+        LANDO_HOST_IP: "host.docker.internal"
+        #XDEBUG_SESSION_START: lando
+        XDEBUG_CONFIG: "mode=debug client_host=host.docker.internal max_nesting_level=256 show_exception_trace=0 discover_client_host=0 client_port=9003"
+  phpAdmin:
+    type: phpmyadmin
+tooling:
+  xdebug-on:
+    service: appserver
+    description: Enable xdebug for nginx.
+    cmd: docker-php-ext-enable xdebug && pkill -o -USR2 php-fpm && echo "Enabling xdebug"
+    user: root
+  xdebug-off:
+    service: appserver
+    description: Disable xdebug for nginx.
+    cmd: rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && pkill -o -USR2 php-fpm && echo "Disabling xdebug"
+    user: root
