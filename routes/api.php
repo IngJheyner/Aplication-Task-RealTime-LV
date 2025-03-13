@@ -15,7 +15,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/login', 'login');
 });
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+// Route::group(['middleware' => ['auth:sanctum']], function () {
 /* ============================================
 AUTH
 =============================================== */
@@ -28,13 +28,16 @@ PROYECTOS
 Route::controller(ProjectController::class)->group(function () {
 
     Route::get('/projects', 'index');
-    Route::get('/projects/{slug}', 'show');
-    Route::get('/count/projects', 'countProjects');
+    //Route::get('/projects/{slug}', 'show');
+    Route::get('/projects/count', 'countProjects');
+    Route::get('/projects/pinned', 'getPinnedProject');
 
     Route::post('/projects', 'store');
 
     Route::put('/projects', 'update');
-    Route::put('/projects/pinned', 'pinnedProject');
+
+    Route::patch('/projects/pinned', 'pinnedProject');
+
 });
 
 /* ============================================
@@ -61,7 +64,7 @@ Route::controller(TaskController::class)->group(function () {
     Route::patch('/tasks/completed-to-not-started', 'taskToCompletedToNotStarted');
 });
 
-});
+// });
 
 Route::get('/user', function (Request $request) {
     return $request->user();

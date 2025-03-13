@@ -115,15 +115,21 @@ class ProjectController extends Controller
      */
     public function pinnedProject(PinnedRequest $request): JsonResponse {
 
-        $fields = $request->validated();
+        return DB::transaction(function () use ($request) {
+            $fields = $request->validated();
 
-        TaskProgress::where('project_id', $fields['project_id'])->update([
-            'pinned_on_dashboard' => TaskPinnedStatus::PINNED_ON_DASHBOARD,
-        ]);
+            TaskProgress::where('pinned_on_dashboard', TaskPinnedStatus::PINNED_ON_DASHBOARD)->update([
+                'pinned_on_dashboard' => TaskPinnedStatus::NOT_PINNED_ON_DASHBOARD,
+            ]);
 
-        return response()->json([
-            'message' => 'Proyecto fijado en el dashboard exitosamente',
-        ]);
+            TaskProgress::where('project_id', $fields['project_id'])->update([
+                'pinned_on_dashboard' => TaskPinnedStatus::PINNED_ON_DASHBOARD,
+            ]);
+
+            return response()->json([
+                'message' => 'Proyecto fijado en el panel exitosamente',
+            ]);
+        });
     }
 
     public function countProjects(): JsonResponse {
@@ -133,5 +139,20 @@ class ProjectController extends Controller
                 'count' => $projects,
         ]);
 
+    }
+
+    /**
+     * Obtener el proyecto fijado en el panel.
+     *
+     * @return JsonResponse
+     */
+    public function getPinnedProject(): JsonResponse {
+
+        $project = DB::table('task_progress')
+            ->join('projects', 'task_progress.project_id', '=', 'projects.id')
+            ->select('projects.id', 'projects.name')
+            ->where('task_progress.pinned_on_dashboard', TaskPinnedStatus::PINNED_ON_DASHBOARD)
+            ->first();
+        return !is_null($project) ? response()->json(['data' => $project]) : response()->json(['data' => null]);
     }
 }

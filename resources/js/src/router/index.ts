@@ -46,7 +46,12 @@ const router = createRouter({
                     path: "/projects",
                     name: "admin.project",
                     component: () => import('@/pages/admin/projects/ProjectsPage.vue')
-                }
+                },
+                {
+                    path: "/project/create",
+                    name: "admin.project.create",
+                    component: () => import('@/pages/admin/projects/CreateProject.vue')
+                },
             ]
         }
     ],

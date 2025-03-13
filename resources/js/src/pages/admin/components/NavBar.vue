@@ -7,7 +7,7 @@ import { APP } from "@/const/APP";
 const navigation = ref( [
 
   {
-    name: "Panel Admin",
+    name: "Panel",
     link: "/dashboard",
     icon: "bi bi-wrench-adjustable",
   },
